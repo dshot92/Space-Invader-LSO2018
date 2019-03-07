@@ -7,14 +7,13 @@
 #include <unistd.h>
 #include <string.h>
 
-
 #define STEP 1
 #define MAXX COLS
 #define MAXY LINES
 #define RIGHT 67
 #define LEFT 68
 #define DELAY 30000
-#define ENEMIES 19
+#define ENEMIES 10
 #define SPRITE 3
 #define SPRITE_X 13
 #define SPRITE_Y 9
@@ -31,10 +30,10 @@ pthread_cond_t cond3 = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock_Bul = PTHREAD_MUTEX_INITIALIZER;
 
-
 int done = 1;
 int counter = 0;
 char command;
+int score=0;
 
 char hearts[LIFE][MAX_STRING] = {"LIVES = @",
 "LIVES = @@",
@@ -83,6 +82,7 @@ void bounce(int i);
 void remove_Invader();
 void print_Invader();
 void collisions();
+void gameScore();
 
 int main(){
 
@@ -109,12 +109,20 @@ int main(){
   init_pair(GREEN, COLOR_GREEN ,COLOR_BLACK);
   init_pair(RED, COLOR_RED ,COLOR_BLACK);
 
+  clock_t start, end;
+  double cpu_time_used;
+
+  double elapesed_time = 0;
+
+  start = clock();
 
   pthread_create(&tid1, NULL, printShip, (void *)&n1);
   pthread_create(&tid2, NULL, printInvader, (void *)&n2);
   pthread_create(&tid3, NULL, control, (void *)&n3);
   pthread_create(&tid4, NULL, getCommand, (void *)&n4);
 
+  end = clock();
+  cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
   while(1);
   // while(!noLife()/* && !EnemyWin()*/){}; //TODO REMOVE THIS
 
@@ -211,7 +219,7 @@ void *printInvader(void *n){
   for(i = 0; i< ENEMIES; i++){
     Invader[i].x = k + 1;
     Invader[i].y = j;
-    Invader[i].life = 1;
+    Invader[i].life = 2;
     Invader[i].c = i+65;
     Invader[i].dir = 0;
 
@@ -345,6 +353,8 @@ void *control(void *n){
     mvaddstr(MAXY,MAXX+1, "       ");
     mvaddstr(MAXY,MAXX+1, "CONTROL");
 
+    // elapesed_time++;
+    gameScore();
     refresh();
 
     usleep(DELAY);
@@ -527,15 +537,24 @@ void collisions(){
 
   for(i = 0; i < 2; i++){ //cycle for each Bullet
     for(j = ENEMIES-1; j >= 0; j--){
-      if((Bullet[i].x == Invader[j].x-1 || Bullet[i].x+1 == Invader[j].x || Bullet[i].x == Invader[j].x) && (Bullet[i].y-1 == Invader[j].y || Bullet[i].y+1 == Invader[j].y || Bullet[i].y == Invader[j].y)){
+      if((Bullet[i].x-1 == Invader[j].x || Bullet[i].x+1 == Invader[j].x || Bullet[i].x == Invader[j].x) && (Bullet[i].y-1 == Invader[j].y || Bullet[i].y+1 == Invader[j].y || Bullet[i].y == Invader[j].y)){
         Invader[j].life--;
         if(Invader[j].life == 0){
           Invader[j].x = -1;
           Invader[j].y = -1;
+          score++;
         }
-        Bullet[i].y = -1;
-        Bullet[i].y = -1;
+        Bullet[i].y = -2;
+        Bullet[i].y = -2;
+        score++;
       }
     }
   }
+}
+
+void gameScore(){
+
+  mvaddstr(0, 1, "SCORE:");
+  mvprintw(0, 11, "%d", score);
+
 }
