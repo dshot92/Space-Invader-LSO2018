@@ -13,7 +13,7 @@
 #define RIGHT 67
 #define LEFT 68
 #define DELAY 30000
-#define ENEMIES 10
+#define ENEMIES 26
 #define SPRITE 3
 #define SPRITE_X 13
 #define SPRITE_Y 9
@@ -83,6 +83,7 @@ void remove_Invader();
 void print_Invader();
 void collisions();
 void gameScore();
+void intro();
 
 int main(){
 
@@ -116,10 +117,12 @@ int main(){
 
   start = clock();
 
+  pthread_create(&tid4, NULL, getCommand, (void *)&n4);
+  intro();
+
   pthread_create(&tid1, NULL, printShip, (void *)&n1);
   pthread_create(&tid2, NULL, printInvader, (void *)&n2);
   pthread_create(&tid3, NULL, control, (void *)&n3);
-  pthread_create(&tid4, NULL, getCommand, (void *)&n4);
 
   end = clock();
   cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
@@ -556,5 +559,73 @@ void gameScore(){
 
   mvaddstr(0, 1, "SCORE:");
   mvprintw(0, 11, "%d", score);
+
+}
+
+void intro(){
+
+  int i,j, k=0;
+  char intro[100][100] = {{"In a world, where dyslexia reigns"},
+  {"undisturbed through the population,"},
+  {"long distant neighbours in our"},
+  {"Milky Way Galaxy has had enough of it"},
+  {"and decided to get here and to give"},
+  {"us a new knowledge renaissance."},
+  {"After some research they decide that"},
+  {"the most common way to contact us is"},
+  {"through landing in the United States."},
+  {"Little did they know that the new "},
+  {"president of the USA is Donald J. Trump,"},
+  {"the sole reason of this dyslexia "},
+  {"spreading amongst human beings."},
+  {""},
+  {"He immediately decide to counter this"},
+  {"new wave of knowledge with all the"},
+  {"military power he can muster."},
+  {""},
+  {"So you find yourself trapped into"},
+  {"being an earth-trooper on the frontline"},
+  {"to defeat the knowledge of"},
+  {"the Alphabet Civilization."},
+  {""},
+  {"Good Luck to you, trooper."},
+  {""},
+  {""},
+  {"LONG LIVE DYSLEXIA"}};
+  attron(COLOR_PAIR(YELLOW));
+  for(i = 27; i > 0 ; i--){
+    clear();
+    for(j = k ; j > 0  ; j--){
+      mvaddstr((LINES/2)-j , (COLS/2- strlen(intro[k-j])/2) , intro[k-j]);
+
+    }
+    // mvaddstr((LINES/2) , (COLS/2) , "                                                                ");
+    mvaddstr((LINES/2) , (COLS/2- strlen(intro[k])/2) , intro[k]);
+    k++;
+    refresh();
+    usleep(15000);
+  }
+  attroff(COLOR_PAIR(YELLOW));
+
+  attron(COLOR_PAIR(GREEN));
+  do{
+
+    mvaddstr(((LINES/2) +4) , (COLS/2 - (strlen("--Press SPACE to start--")/2)) , "                              ");
+
+    refresh();
+
+    usleep(200000);
+
+    mvaddstr(((LINES/2) +4) , (COLS/2 - (strlen("--Press SPACE to start--")/2)) , "--Press SPACE to start--");
+
+    refresh();
+
+    usleep(200000);
+
+  }while(command != ' ');
+  attroff(COLOR_PAIR(GREEN));
+
+
+  command = 's'; // clear buffer, so that ship wont fire immediately
 
 }
