@@ -13,7 +13,7 @@
 #define RIGHT 67
 #define LEFT 68
 #define DELAY 30000
-#define ENEMIES 26
+#define ENEMIES 1
 #define SPRITE 3
 #define SPRITE_X 13
 #define SPRITE_Y 9
@@ -118,7 +118,8 @@ int main(){
   start = clock();
 
   pthread_create(&tid4, NULL, getCommand, (void *)&n4);
-  intro();
+
+  // intro();
 
   pthread_create(&tid1, NULL, printShip, (void *)&n1);
   pthread_create(&tid2, NULL, printInvader, (void *)&n2);
@@ -217,7 +218,8 @@ void *printShip(void *n){
 }
 
 void *printInvader(void *n){
-  int i, j=0, k=0;
+  int i, j=0, k=0, levelOne = 0;
+  _Bool livelOneEnd = false;
 
   for(i = 0; i< ENEMIES; i++){
     Invader[i].x = k + 1;
@@ -233,18 +235,80 @@ void *printInvader(void *n){
     }
   }
 
-  // for(i = 0; i< ENEMIES; i++){
-  //   Invader[i].x = (i+rand())%MAXX-2;
-  //   Invader[i].y = i;
-  //   Invader[i].life = 2;
-  //   Invader[i].c = i+65;
-  //
-  //   // Invader[i].dir = rand()%2;
-  //   // Invader[i].dir = 0;
-  //   Invader[i].dir = i%2;
-  // }
-
   int dx = STEP;
+
+  while(!livelOneEnd) {
+
+    pthread_mutex_lock(&lock);
+
+    if (done != (int)*(int*)n) {
+
+      if ((int)*(int*)n == 1) {
+        pthread_cond_wait(&cond1, &lock);
+      } else if ((int)*(int*)n == 2) {
+        pthread_cond_wait(&cond2, &lock);
+      }
+      else {
+        pthread_cond_wait(&cond3, &lock);
+      }
+    }
+
+    // bounce();
+    for(i=0;i<ENEMIES;i++){
+      bounce(i);
+      if(Invader[i].life){
+        if(Invader[i].x + dx > MAXX-1 || Invader[i].x +dx < 1){
+          Invader[i].y++;
+          Invader[i].dir = !Invader[i].dir;
+        }
+        if(Invader[i].dir)
+        Invader[i].x -= dx;
+        else
+        Invader[i].x += dx;
+      }
+    }
+
+
+    // counter++;
+    // mvaddstr(counter%MAXY,MAXX+1, "          ");
+    mvaddstr(MAXY+2,MAXX+1, "        ");
+    mvaddstr(MAXY+2,MAXX+1, "INVADER");
+
+    for(i = 0; i < ENEMIES ; i++){
+      levelOne += Invader[i].life;
+      if(levelOne == 0){
+        livelOneEnd = true;
+      }
+      levelOne=0;
+    }
+
+    usleep(DELAY);
+
+    if (done == 3) {
+      done = 1;
+      pthread_cond_signal(&cond1);
+    }
+    else if(done == 1) {
+      done = 2;
+      pthread_cond_signal(&cond2);
+    } else if (done == 2) {
+      done = 3;
+      pthread_cond_signal(&cond3);
+    }
+
+    pthread_mutex_unlock(&lock);
+  }
+
+  for(i = 0; i< ENEMIES; i++){
+    Invader[i].x = (i+rand())%MAXX-2;
+    Invader[i].y = i;
+    Invader[i].life = 2;
+    Invader[i].c = i+65;
+
+    // Invader[i].dir = rand()%2;
+    // Invader[i].dir = 0;
+    Invader[i].dir = i%2;
+  }
 
   while(1) {
 
