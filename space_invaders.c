@@ -568,7 +568,7 @@ void intro(){
   char intro[100][100] = {{"In a world, where dyslexia reigns"},
   {"undisturbed through the population,"},
   {"long distant neighbours in our"},
-  {"Milky Way Galaxy has had enough of it"},
+  {"Milky Way Galaxy had enough of it"},
   {"and decided to get here and to give"},
   {"us a new knowledge renaissance."},
   {"After some research they decide that"},
@@ -603,11 +603,12 @@ void intro(){
     mvaddstr((LINES/2) , (COLS/2- strlen(intro[k])/2) , intro[k]);
     k++;
     refresh();
-    usleep(15000);
+    usleep(1500000);
   }
   attroff(COLOR_PAIR(YELLOW));
 
   attron(COLOR_PAIR(GREEN));
+
   do{
 
     mvaddstr(((LINES/2) +4) , (COLS/2 - (strlen("--Press SPACE to start--")/2)) , "                              ");
