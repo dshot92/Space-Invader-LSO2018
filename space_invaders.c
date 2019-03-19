@@ -13,12 +13,13 @@
 #define RIGHT 67
 #define LEFT 68
 #define DELAY 30000
-#define ENEMIES 1
+#define ENEMIES 5
 #define SPRITE 3
 #define SPRITE_X 13
 #define SPRITE_Y 9
 #define LIFE 6
 #define MAX_STRING 20
+#define DIM_QUEUE 10
 
 #define RED 1
 #define GREEN 2
@@ -52,8 +53,22 @@ typedef struct {
   char c;
   _Bool updated;
   _Bool cooldown;
-
 }Object;
+
+// struct node {
+//   Object data;
+//   struct node *link;
+// };
+//
+// typedef struct node Node;
+//
+// typedef struct {
+//   Node *front;
+//   Node *back;
+//   int cont;
+// } Buffer;
+//
+// Buffer *buffer;
 
 Object Ship;
 Object Invader[ENEMIES];
@@ -79,17 +94,26 @@ void GameOver();
 void removeBullet();
 void printBullet();
 void bounce(int i);
-void remove_Invader();
+void  remove_Invader();
 void print_Invader();
 void collisions();
 void gameScore();
 void intro();
+
+// _Bool isEmptyQueue(Buffer *que);
+// _Bool isFullQueue(Buffer *que);
+// void pushQueue(Buffer *que, Object ord);
+// Object popQueue(Buffer *que);
 
 int main(){
 
   pthread_t tid1, tid2, tid3, tid4;
   int n1 = 1, n2 = 2, n3 = 3, n4 = 4;
   int i = 0;
+  // buffer->front = NULL;
+  // buffer->back = NULL;
+  // buffer->cont = 0;
+
 
   srand(time(NULL));
 
@@ -179,9 +203,9 @@ void *printShip(void *n){
         strcpy(Ship.sprite, "|\\ | \\---");
       }
 
-      if(command == ' ' && !Ship.cooldown){
+      if(command == ' '/*  && !Ship.cooldown */){
         pthread_create(&bul, NULL, bullet, (void *)&m1);
-        Ship.cooldown = true;
+        // Ship.cooldown = true;
       }
 
       if(command == 'l'){
@@ -225,7 +249,7 @@ void *printInvader(void *n){
     Invader[i].x = k + 1;
     Invader[i].y = j;
     Invader[i].life = 2;
-    Invader[i].c = i+65;
+    Invader[i].c = i+97;
     Invader[i].dir = 0;
 
     k+=3;
@@ -274,12 +298,12 @@ void *printInvader(void *n){
     mvaddstr(MAXY+2,MAXX+1, "        ");
     mvaddstr(MAXY+2,MAXX+1, "INVADER");
 
+    levelOne=0;
     for(i = 0; i < ENEMIES ; i++){
       levelOne += Invader[i].life;
       if(levelOne == 0){
         livelOneEnd = true;
       }
-      levelOne=0;
     }
 
     usleep(DELAY);
@@ -469,6 +493,16 @@ void printSprite(Object ship){
   }
   attroff(COLOR_PAIR(YELLOW));
   strcpy(Ship.sprite, " A / \\---");
+  // int i,j, index=0;
+  // attron(COLOR_PAIR(YELLOW));
+  // for (i = 0; i < SPRITE; i++){
+  //   for (j = 0; j < SPRITE; j++){
+  //     mvaddch(ship.y+i, ship.x+j, ship.sprite[index]);
+  //     index++;
+  //   }
+  // }
+  // attroff(COLOR_PAIR(YELLOW));
+  // strcpy(Ship.sprite, " A / \\---");
 }
 
 void printSpriteAccurate(Object ship){
@@ -536,6 +570,9 @@ void *bullet(void *m){
     }
   }
 
+  // pushQueue(buffer, Bullet[0]);
+  // pushQueue(buffer, Bullet[1]);
+
   while(Bullet[0].y > -1 || Bullet[1].y > -1){
     if(done==2){
       for(i=0;i<2;i++){
@@ -560,6 +597,9 @@ void *bullet(void *m){
       usleep(DELAY*2);
       // }
     }
+    // pushQueue(buffer, Bullet[0]);
+    // pushQueue(buffer, Bullet[1]);
+
   }
   Ship.cooldown = false;
 }
@@ -585,9 +625,16 @@ void remove_Invader(){
 void printBullet(){
   int i;
   for (i = 0; i < 2; i++){
-    if(Bullet[i].life)
     mvaddch(Bullet[i].y, Bullet[i].x, Bullet[i].c);
   }
+  // Object aux;
+  // aux = popQueue(buffer);
+  // if(aux.life)
+  // mvaddch(aux.y, aux.x, aux.c);
+  //
+  // aux = popQueue(buffer);
+  // if(aux.life)
+  // mvaddch(aux.y, aux.x, aux.c);
 }
 
 void removeBullet(){
@@ -604,7 +651,7 @@ void collisions(){
 
   for(i = 0; i < 2; i++){ //cycle for each Bullet
     for(j = ENEMIES-1; j >= 0; j--){
-      if((Bullet[i].x-1 == Invader[j].x || Bullet[i].x+1 == Invader[j].x || Bullet[i].x == Invader[j].x) && (Bullet[i].y-1 == Invader[j].y || Bullet[i].y+1 == Invader[j].y || Bullet[i].y == Invader[j].y)){
+      if(Invader[j].life != 0 && (Bullet[i].x-1 == Invader[j].x || Bullet[i].x+1 == Invader[j].x || Bullet[i].x == Invader[j].x) && (Bullet[i].y-1 == Invader[j].y || Bullet[i].y+1 == Invader[j].y || Bullet[i].y == Invader[j].y)){
         Invader[j].life--;
         if(Invader[j].life == 0){
           Invader[j].x = -1;
@@ -661,9 +708,8 @@ void intro(){
     clear();
     for(j = k ; j > 0  ; j--){
       mvaddstr((LINES/2)-j , (COLS/2- strlen(intro[k-j])/2) , intro[k-j]);
-
     }
-    // mvaddstr((LINES/2) , (COLS/2) , "                                                                ");
+
     mvaddstr((LINES/2) , (COLS/2- strlen(intro[k])/2) , intro[k]);
     k++;
     refresh();
@@ -679,18 +725,84 @@ void intro(){
 
     refresh();
 
-    usleep(200000);
+    usleep(DELAY);
 
     mvaddstr(((LINES/2) +4) , (COLS/2 - (strlen("--Press SPACE to start--")/2)) , "--Press SPACE to start--");
 
     refresh();
 
-    usleep(200000);
+    usleep(DELAY);
 
   }while(command != ' ');
   attroff(COLOR_PAIR(GREEN));
 
-
   command = 's'; // clear buffer, so that ship wont fire immediately
 
 }
+
+// _Bool isEmptyQueue(Buffer *que) {
+//   if (que->cont == 0)
+//   return true;
+//   else
+//   return false;
+// }
+//
+// _Bool isFullQueue(Buffer *que) {
+//
+//   if (que->cont == DIM_QUEUE)
+//   return true;
+//   else
+//   return false;
+// }
+//
+// void pushQueue(Buffer *que, Object order) {
+//
+//   Node *new_node = NULL;
+//
+//   if (isFullQueue(que)) {
+//     printf("\n----------------------------------------\n"
+//     "Overflow Error. Queue is already FULL!\n"
+//     "----------------------------------------\n");
+//   } else {
+//     new_node = (Node*)malloc(sizeof(Node));
+//     new_node->data = order;
+//     new_node->link = NULL;
+//
+//     if (isEmptyQueue(que)) {
+//       que->front = new_node;
+//       que->back = new_node;
+//     } else {
+//       que->back->link = new_node;
+//       que->back = new_node;
+//     }
+//     que->cont++;
+//   }
+// }
+//
+// Object popQueue(Buffer *que) {
+//
+//   Object val;
+//   Node *temp = NULL;
+//
+//   if (isEmptyQueue(que)) {
+//     printf("\n----------------------------------------\n"
+//     "Underflow Error. Queue is already Empty!\n"
+//     "----------------------------------------\n");
+//     // val.price = 0;
+//     // val.shippingAddress[0] = '\0';
+//     // val.article[0] = '\0';
+//   } else {
+//     temp = que->front;
+//     val = que->front->data;
+//
+//     if (que->cont == 1) {
+//       que->front = NULL;
+//       que->back = NULL;
+//     } else {
+//       que->front = que->front->link;
+//     }
+//     que->cont--;
+//     free(temp);
+//   }
+//   return val;
+// }
