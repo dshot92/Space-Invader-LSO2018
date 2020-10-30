@@ -1,4 +1,4 @@
-# LSO2018
+# Space-Invader-LSO2018
 
 Space-Invader game written in C, for getting to know the [ncurses](https://invisible-island.net/ncurses/) and [p-thread](https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html) library.
 
