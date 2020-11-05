@@ -10,7 +10,7 @@
 
 #define DIM_QUEUE 10000
 #define DELAY 10000
-#define ENEMIES 5
+#define ENEMIES 50
 #define STEP 1
 #define MAXX COLS
 #define MAXY LINES
