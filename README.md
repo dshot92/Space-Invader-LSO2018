@@ -32,4 +32,4 @@ chmod +x space_invaders.sh
 
 # Example Video
 
-![](/home/dshot/Desktop/example.gif)
+![example](README.assets/example.gif)
