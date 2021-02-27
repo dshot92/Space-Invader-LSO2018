@@ -18,17 +18,17 @@ chmod +x space_invaders.sh
 
 
 
-|          Commands          |                 Cheats                 |
-| :------------------------: | :------------------------------------: |
-| **Space** - Select / Shoot |        **P** - Increase Life +1        |
-|         **W** - Up         |        **L** - Decrease Life -1        |
-|        **A** - Left        |      **K** - Increase Missile +1       |
-|        **S** - Down        |            **U** - Get EMP             |
-|       **D** - Right        |           **J** - Get Shield           |
-|      **Q** - Up Left       | **I** - Decrease (All) enemies life -1 |
-|      **E** - Up Right      |                                        |
-|    **F** - Activate EMP    |                                        |
-|   **M** - Shoot Missile    |                                        |
+| Commands                          | Cheats                                            |
+| :-------------------------------- | :------------------------------------------------ |
+| <kbd>Space</kbd> - Select / Shoot | <kbd>P</kbd> - Increase Life +1                   |
+| **<kbd>W</kbd>** - Up             | **<kbd>L</kbd>** - Decrease Life -1               |
+| **<kbd>A</kbd>** - Left           | **<kbd>K</kbd>** - Increase Missile +1            |
+| **<kbd>S</kbd>** - Down           | **<kbd>U</kbd>** - Get EMP                        |
+| **<kbd>S</kbd>** - Right          | **<kbd>J</kbd>** - Get Shield                     |
+| **<kbd>Q</kbd>** - Up Left        | **<kbd>I</kbd>** - Decrease (All) enemies life -1 |
+| <kbd>E</kbd> - Up Right           |                                                   |
+| **<kbd>F</kbd>** - Activate EMP   |                                                   |
+| **<kbd>M</kbd>** - Shoot Missile  |                                                   |
 
 # Example Video
 
