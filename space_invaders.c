@@ -171,7 +171,7 @@ int main(){
 
   pthread_create(&tid_getCommand, NULL, getCommand, NULL);
 
-  //intro();
+  intro();
 
   initializeBuffer();
 
